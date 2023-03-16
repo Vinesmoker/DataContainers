@@ -59,7 +59,6 @@ public:
 	{
 		return Temp->Data;
 	}
-
 };
 
 class ForwardList	//Forward - односвязный, однонаправленный
@@ -190,11 +189,6 @@ public:
 		cout << "Общее количество элементов: " << Element::count << endl;
 	}
 };
-
-ForwardList operator+(const ForwardList left,const ForwardList right)
-{
-	left
-}
 
 //#define BASE_CHECK
 //#define RANGE_BASED_FOR_ARRAY
