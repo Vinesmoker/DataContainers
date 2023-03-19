@@ -1,10 +1,11 @@
+#include"ForwardList.h"
 #include"ForwardList.cpp"
 
 
 //#define BASE_CHECK
 //#define RANGE_BASED_FOR_ARRAY
-#define RANGE_BASED_FOR_LIST
-//#define HOME_WORK_1
+//#define RANGE_BASED_FOR_LIST
+#define HOME_WORK_1
 
 void main()
 {
@@ -65,7 +66,7 @@ void main()
 
 
 #ifdef HOME_WORK_1
-	ForwardList list = { 3, 5, 8, 13, 21 };
+	ForwardList<int> list = { 3, 5, 8, 13, 21 };
 	//list.print();
 	for (int i : list)
 	{
@@ -73,11 +74,11 @@ void main()
 	}
 	cout << endl;
 
-	ForwardList list2 = { 34, 55, 89 };
+	ForwardList<int> list2 = { 34, 55, 89 };
 	for (int i : list2)cout << i << tab; cout << endl;
 
-	ForwardList list3 = list + list2;
-	for (int i : list3)cout << i << tab; cout << end; l
+	ForwardList<int> list3 = list + list2;
+	for (int i : list3)cout << i << tab; cout << endl;
 #endif // HOME_WORK_1
 
 }

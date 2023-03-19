@@ -45,7 +45,7 @@ public:
 	bool operator!=(const Iterator<T>& other)const;
 
 	T& operator*();
-
+	friend ForwardList;
 };
 
 template<typename T>class ForwardList	//Forward - односвязный, однонаправленный
@@ -58,7 +58,6 @@ public:
 	ForwardList();
 	ForwardList(const std::initializer_list<T>& il);
 	~ForwardList();
-
 	//					Adding elements:
 	void push_front(T Data);
 	void push_back(T Data);
@@ -66,7 +65,6 @@ public:
 
 	//					Erasing Elements
 	void pop_front();
-
 	void pop_back();
 
 	//					Methods:

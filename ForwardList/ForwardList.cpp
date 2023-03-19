@@ -42,7 +42,6 @@ template<typename T>Iterator<T>& Iterator<T>::operator++()
 	Temp = Temp->pNext;
 	return *this;
 }
-
 template<typename T>bool Iterator<T>::operator==(const Iterator<T>& other)const
 {
 	return this->Temp == other.Temp;
@@ -125,7 +124,6 @@ template<typename T>void ForwardList<T>::pop_front()
 
 	size--;
 }
-
 template<typename T>void ForwardList<T>::pop_back()
 {
 	Element<T>* Temp = Head;
