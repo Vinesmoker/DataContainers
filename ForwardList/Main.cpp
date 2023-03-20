@@ -46,6 +46,11 @@ public:
 		Temp = Temp->pNext;
 		return *this;
 	}
+	Iterator& operator++(int)
+	{
+		Temp = Temp->pNext;
+		return *this;
+	}
 
 	bool operator==(const Iterator& other)const
 	{
@@ -70,7 +75,15 @@ public:
 	{
 		return Head;
 	}
+	const Iterator begin()const
+	{
+		return Head;
+	}
 	Iterator end()
+	{
+		return nullptr;
+	}
+	const Iterator end()const
 	{
 		return nullptr;
 	}
@@ -93,6 +106,11 @@ public:
 		{
 			push_back(*it);
 		}
+	}
+	ForwardList(const ForwardList& other)
+	{
+		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
+			push_back(Temp->Data);
 	}
 	~ForwardList()
 	{
@@ -189,6 +207,14 @@ public:
 		cout << "Общее количество элементов: " << Element::count << endl;
 	}
 };
+
+ForwardList operator+(const ForwardList & left, const ForwardList& right)
+{
+	ForwardList cat;
+	for (Iterator it = left.begin(); it != left.end(); it++)cat.push_back(*it);
+	for (Iterator it = right.begin(); it != right.end(); it++)cat.push_back(*it);
+	return cat;
+}
 
 //#define BASE_CHECK
 //#define RANGE_BASED_FOR_ARRAY
