@@ -15,12 +15,12 @@ public:
 	Element(int Data, Element* pNext = nullptr) :Data(Data), pNext(pNext)
 	{
 		count++;
-		cout << "EConstructor:\t" << this << endl;
+		//cout << "EConstructor:\t" << this << endl;
 	}
 	~Element()
 	{
 		count--;
-		cout << "EDestructor:\t" << this << endl;
+		//cout << "EDestructor:\t" << this << endl;
 	}
 	friend class ForwardList;
 	friend class Iterator;
@@ -34,11 +34,11 @@ class Iterator
 public:
 	Iterator(Element* Temp = nullptr) :Temp(Temp)
 	{
-		cout << "ItConstructor:\t" << this << endl;
+		//cout << "ItConstructor:\t" << this << endl;
 	}
 	~Iterator()
 	{
-		cout << "ItDestructor:\t" << this << endl;
+		//cout << "ItDestructor:\t" << this << endl;
 	}
 
 	Iterator& operator++()
@@ -59,6 +59,10 @@ public:
 	bool operator!=(const Iterator& other)const
 	{
 		return this->Temp != other.Temp;
+	}
+	const int& operator*()const
+	{
+		return Temp->Data;
 	}
 	int& operator*()
 	{
@@ -91,7 +95,7 @@ public:
 	{
 		Head = nullptr;	//≈сли список пуст, то его √олова указывает на 0
 		size = 0;
-		cout << "LConstructor:\t" << this << endl;
+		//cout << "LConstructor:\t" << this << endl;
 	}
 	ForwardList(const std::initializer_list<int>& il) :ForwardList()
 	{
@@ -101,7 +105,7 @@ public:
 		// ак и у любого другого контейнера, у initilizer_list есть методы begin() и end()
 		//begin() - возвращает итератор на начало контейнера.
 		//end()   - возвращает итератор на конец контейнера.
-		cout << typeid(il.begin()).name() << endl;
+		//cout << typeid(il.begin()).name() << endl;
 		for (int const* it = il.begin(); it != il.end(); it++)
 		{
 			push_back(*it);
@@ -109,13 +113,15 @@ public:
 	}
 	ForwardList(const ForwardList& other)
 	{
-		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
-			push_back(Temp->Data);
+		for (Element* Temp = other.Head; Temp; Temp = Temp->pNext)
+			push_front(Temp->Data);
+		reverse();
+		cout << "CopyConstructor:\t" << this << endl;
 	}
 	~ForwardList()
 	{
 		while (Head)pop_front();
-		cout << "LDestructor:\t" << this << endl;
+		//cout << "LDestructor:\t" << this << endl;
 	}
 
 	//					Adding elements:
@@ -190,6 +196,17 @@ public:
 	}
 
 	//					Methods:
+	void reverse()
+	{
+		ForwardList buffer;
+		while(Head)
+		{
+			buffer.push_front(Head->Data);
+			pop_front();
+		}
+		Head = buffer.Head;
+		buffer.Head = nullptr;
+	}
 	void print()const
 	{
 		/*Element* Temp = Head;	//Temp - это итератор
@@ -211,7 +228,7 @@ public:
 ForwardList operator+(const ForwardList & left, const ForwardList& right)
 {
 	ForwardList cat;
-	for (Iterator it = left.begin(); it != left.end(); it++)cat.push_back(*it);
+	for (Iterator it = left.begin(); it != left.end(); it++)cat.push_back(*it *= 10);
 	for (Iterator it = right.begin(); it != right.end(); it++)cat.push_back(*it);
 	return cat;
 }
@@ -219,10 +236,12 @@ ForwardList operator+(const ForwardList & left, const ForwardList& right)
 //#define BASE_CHECK
 //#define RANGE_BASED_FOR_ARRAY
 #define HOME_WORK_1
+//#define PERFORMANCE_CHECK
 
 void main()
 {
 	setlocale(LC_ALL, "");
+
 #ifdef BASE_CHECK
 	int n;
 	cout << "¬ведите размер списка: "; cin >> n;
@@ -279,5 +298,25 @@ void main()
 
 	ForwardList list3 = list + list2;
 	for (int i : list3)cout << i << tab; cout << endl;
+
+	for (int i : list)cout << i << tab; cout << endl;
+
 #endif // HOME_WORK_1
+
+#ifdef PERFORMANCE_CHECK
+	ForwardList list;
+	int n;
+	cout << "¬ведите размер списка: "; cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		list.push_front(rand() % 100);
+	}
+	cout << "—писок заполнен!" << endl;
+	ForwardList list2 = list;
+	//for (int i : list)cout << i << tab; cout << endl;
+	//for (int i : list2)cout << i << tab; cout << endl;  
+#endif // PERFORMANCE_CHECK
+
+
+
 }
