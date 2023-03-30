@@ -82,11 +82,11 @@ public:
 	public:
 		ReversIterator(Element* Temp = nullptr) : Temp(Temp)
 		{
-			//cout << "RItConstructor\t" << this << endl;
+			cout << "RItConstructor\t" << this << endl;
 		}
 		~ReversIterator()
 		{
-			//cout << "RItDestructor\t" << this << endl;
+			cout << "RItDestructor\t" << this << endl;
 		}
 		ReversIterator& operator++()
 		{
@@ -206,7 +206,6 @@ public:
 		Tail = Tail->pNext = new Element(Data, nullptr, Tail);
 		size++;
 	}
-
 	void insert(int Index, int Data)
 	{
 		if (Index > size)return;
@@ -262,6 +261,7 @@ public:
 		Tail->pNext = nullptr;
 		size--;
 	}
+	void erase() {}                 ////////// дндекюрэ!!!
 
 	//             Methods:
 	void print()
@@ -282,6 +282,10 @@ public:
 	}
 };
 
+void print(const List& list)
+{
+
+}
 void main()
 {
 	setlocale(LC_ALL, "");
@@ -316,4 +320,8 @@ void main()
 		cout << *rit << tab;
 	}
 	cout << endl;
+
+	print(list);
+	reverse_print(list);
+
 }
