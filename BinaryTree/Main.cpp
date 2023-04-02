@@ -93,6 +93,17 @@ public:
 	{
 		return (double)sum(Root) / count(Root);
 	}
+	int depth(Tree::Element* Root)
+	{
+		if (Root == nullptr) return 0;
+		else
+		{
+			int leftDepth = depth(Root->pLeft);
+			int rightDepth = depth(Root->pRight);
+			if (leftDepth > rightDepth) return leftDepth + 1;
+			else return rightDepth + 1;
+		}
+	}
 	void clear()
 	{
 
@@ -121,6 +132,17 @@ public:
 	{
 		return (double)sum(Root) / count(Root);
 	}
+	int depth(Tree::Element* Root)
+	{
+		if (Root == nullptr) return 0;
+		else
+		{
+			int leftDepth = depth(Root->pLeft);
+			int rightDepth = depth(Root->pRight);
+			if (leftDepth > rightDepth) return leftDepth + 1;
+			else return rightDepth + 1;
+		}
+	}
 };
 
 void main()
@@ -139,6 +161,7 @@ void main()
 	cout << "\nКоличество элементов в дереве: " << tree.count(tree.getRoot()) << endl;
 	cout << "\nСумма элементов в дереве: " << tree.sum(tree.getRoot()) << endl;
 	cout << "\nСреднее арефмитическое элементов дерева: " << tree.avg() << endl;
+	cout << "\nГлубина дерева: " << tree.depth(tree.getRoot()) << endl;
 
 
 	cout << endl;
@@ -157,4 +180,5 @@ void main()
 	cout << "\nКоличество элементов в дереве: " << tree2.count(tree2.getRoot()) << endl;
 	cout << "\nСумма элементов в дереве: " << tree2.sum(tree2.getRoot()) << endl;
 	cout << "\nСреднее арефмитическое элементов дерева: " << tree2.avg() << endl;
+	cout << "\nГлубина дерева: " << tree2.depth(tree.getRoot()) << endl;
 }
