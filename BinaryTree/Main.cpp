@@ -139,8 +139,8 @@ void main()
 	cout << "\nМаксимальное значение в дереве: " << tree.maxValue(tree.getRoot()) << endl;
 	cout << "\nКоличество элементов в дереве: " << tree.count(tree.getRoot()) << endl;
 	cout << "\nСумма элементов в дереве: " << tree.sum(tree.getRoot()) << endl;
-	cout << "Время выполнения подсчета: " << time << " секунд" << endl;
-	cout << "Среднее арефмитическое элементов дерева: " << tree.avg() << endl;
+	cout << "\nВремя выполнения подсчета: " << time << " секунд" << endl;
+	cout << "\nСреднее арефмитическое элементов дерева: " << tree.avg() << endl;
 	clock_t end_time = clock();
 	double time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
@@ -156,13 +156,9 @@ void main()
 		tree2.insert(rand() % 100, tree2.getRoot());
 	}
 	tree2.print(tree2.getRoot());
-	clock_t start_time = clock();
-	tree.print(tree.getRoot());
 	cout << "\nМинимальное значение в дереве: " << tree2.minValue(tree2.getRoot()) << endl;
 	cout << "\nМаксимальное значение в дереве: " << tree2.maxValue(tree2.getRoot()) << endl;
 	cout << "\nКоличество элементов в дереве: " << tree2.count(tree2.getRoot()) << endl;
 	cout << "\nСумма элементов в дереве: " << tree2.sum(tree2.getRoot()) << endl;
-	cout << "Среднее арефмитическое элементов дерева: " << tree2.avg() << endl;
-	clock_t end_time = clock();
-	double time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+	cout << "\nСреднее арефмитическое элементов дерева: " << tree2.avg() << endl;
 }
