@@ -104,10 +104,6 @@ public:
 			else return rightDepth + 1;
 		}
 	}
-	void clear()
-	{
-
-	}
 };
 
 class UniqueTree :public Tree
@@ -143,7 +139,9 @@ public:
 			else return rightDepth + 1;
 		}
 	}
+
 };
+
 
 void main()
 {
