@@ -93,7 +93,7 @@ public:
 	{
 		return (double)sum(Root) / count(Root);
 	}
-	int depth(Tree::Element* Root)
+	int depth(Element* Root)
 	{
 		if (Root == nullptr) return 0;
 		else
@@ -104,6 +104,98 @@ public:
 			else return rightDepth + 1;
 		}
 	}
+	
+
+	void erase(int Data, Element* Root)
+	{
+		Element* parent = nullptr;
+		Element* current = Root;
+		while (current != nullptr && current->Data != Data)
+		{
+			parent = current;
+			if (Data < current->Data)
+			{
+				current = current->pLeft;
+			}
+			else
+			{
+				current = current->pRight;
+			}
+		}
+		if (current == nullptr)
+		{
+			return;
+		}
+		if (current->pLeft == nullptr && current->pRight == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = nullptr;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = nullptr;
+			}
+			else
+			{
+				parent->pRight = nullptr;
+			}
+			delete current;
+		}
+		else if (current->pLeft == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = current->pRight;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = current->pRight;
+			}
+			else
+			{
+				parent->pRight = current->pRight;
+			}
+			delete current;
+		}
+		else if (current->pRight == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = current->pLeft;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = current->pLeft;
+			}
+			else
+			{
+				parent->pRight = current->pLeft;
+			}
+			delete current;
+		}
+		else
+		{
+			Element* minParent = current;
+			Element* min = current->pRight;
+			while (min->pLeft != nullptr)
+			{
+				minParent = min;
+				min = min->pLeft;
+			}
+			current->Data = min->Data;
+			if (minParent->pLeft == min)
+			{
+				minParent->pLeft = min->pRight;
+			}
+			else
+			{
+				minParent->pRight = min->pRight;
+			}
+			delete min;
+		}
+	}
+	
 };
 
 class UniqueTree :public Tree
@@ -128,7 +220,7 @@ public:
 	{
 		return (double)sum(Root) / count(Root);
 	}
-	int depth(Tree::Element* Root)
+	int depth(Element* Root)
 	{
 		if (Root == nullptr) return 0;
 		else
@@ -139,14 +231,114 @@ public:
 			else return rightDepth + 1;
 		}
 	}
-
+	void erase(int Data, Element* Root)
+	{
+		Element* parent = nullptr;
+		Element* current = Root;
+		while (current != nullptr && current->Data != Data)
+		{
+			parent = current;
+			if (Data < current->Data)
+			{
+				current = current->pLeft;
+			}
+			else
+			{
+				current = current->pRight;
+			}
+		}
+		if (current == nullptr)
+		{
+			return;
+		}
+		if (current->pLeft == nullptr && current->pRight == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = nullptr;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = nullptr;
+			}
+			else
+			{
+				parent->pRight = nullptr;
+			}
+			delete current;
+		}
+		else if (current->pLeft == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = current->pRight;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = current->pRight;
+			}
+			else
+			{
+				parent->pRight = current->pRight;
+			}
+			delete current;
+		}
+		else if (current->pRight == nullptr)
+		{
+			if (current == Root)
+			{
+				Root = current->pLeft;
+			}
+			else if (parent->pLeft == current)
+			{
+				parent->pLeft = current->pLeft;
+			}
+			else
+			{
+				parent->pRight = current->pLeft;
+			}
+			delete current;
+		}
+		else
+		{
+			Element* minParent = current;
+			Element* min = current->pRight;
+			while (min->pLeft != nullptr)
+			{
+				minParent = min;
+				min = min->pLeft;
+			}
+			current->Data = min->Data;
+			if (minParent->pLeft == min)
+			{
+				minParent->pLeft = min->pRight;
+			}
+			else
+			{
+				minParent->pRight = min->pRight;
+			}
+			delete min;
+		}
+	}
+	void clear()
+	{
+		clear(Root);
+		Root = nullptr;
+	}
+	void clear(Element* Root)
+	{
+		if (Root == nullptr) return;
+		clear(Root->pLeft);
+		clear(Root->pRight);
+		delete Root;
+	}
 };
 
 
 void main()
 {
 	setlocale(LC_ALL, "");
-	int n;
+	int n; int q;
 	cout << "Введите размер дерева: "; cin >> n;
 	Tree tree;
 	for (int i = 0; i < n; i++)
@@ -160,6 +352,12 @@ void main()
 	cout << "\nСумма элементов в дереве: " << tree.sum(tree.getRoot()) << endl;
 	cout << "\nСреднее арефмитическое элементов дерева: " << tree.avg() << endl;
 	cout << "\nГлубина дерева: " << tree.depth(tree.getRoot()) << endl;
+	cout << "Введите удаляемый элемент дерева: "; cin >> q;
+	tree.erase(q, tree.getRoot());
+	cout << "Дерево после удаления:\n";
+	tree.print(tree.getRoot());
+	cout << endl;
+	//tree.clear(tree.getRoot());
 
 
 	cout << endl;
@@ -173,10 +371,17 @@ void main()
 		tree2.insert(rand() % 100, tree2.getRoot());
 	}
 	tree2.print(tree2.getRoot());
+	tree2.clear();
 	cout << "\nМинимальное значение в дереве: " << tree2.minValue(tree2.getRoot()) << endl;
 	cout << "\nМаксимальное значение в дереве: " << tree2.maxValue(tree2.getRoot()) << endl;
 	cout << "\nКоличество элементов в дереве: " << tree2.count(tree2.getRoot()) << endl;
 	cout << "\nСумма элементов в дереве: " << tree2.sum(tree2.getRoot()) << endl;
 	cout << "\nСреднее арефмитическое элементов дерева: " << tree2.avg() << endl;
 	cout << "\nГлубина дерева: " << tree2.depth(tree.getRoot()) << endl;
+	cout << "\nВведите удаляемый элемент дерева: "; cin >> q;
+	tree2.erase(q, tree2.getRoot());
+	cout << "\nДерево после удаления:\n";
+	tree2.print(tree2.getRoot());
+	cout << endl;
+	tree2.print(tree2.getRoot());
 }
