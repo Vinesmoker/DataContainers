@@ -106,96 +106,25 @@ public:
 	}
 	
 
-	void erase(int Data, Element* Root)
-	{
-		Element* parent = nullptr;
-		Element* current = Root;
-		while (current != nullptr && current->Data != Data)
-		{
-			parent = current;
-			if (Data < current->Data)
-			{
-				current = current->pLeft;
-			}
-			else
-			{
-				current = current->pRight;
-			}
-		}
-		if (current == nullptr)
-		{
-			return;
-		}
-		if (current->pLeft == nullptr && current->pRight == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = nullptr;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = nullptr;
-			}
-			else
-			{
-				parent->pRight = nullptr;
-			}
-			delete current;
-		}
-		else if (current->pLeft == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = current->pRight;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = current->pRight;
-			}
-			else
-			{
-				parent->pRight = current->pRight;
-			}
-			delete current;
-		}
-		else if (current->pRight == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = current->pLeft;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = current->pLeft;
-			}
-			else
-			{
-				parent->pRight = current->pLeft;
-			}
-			delete current;
-		}
-		else
-		{
-			Element* minParent = current;
-			Element* min = current->pRight;
-			while (min->pLeft != nullptr)
-			{
-				minParent = min;
-				min = min->pLeft;
-			}
+	void erase(int Data, Element*& Root) {
+		Element* parent = nullptr, * current = Root;
+		while (current && current->Data != Data)
+			parent = current, current = (Data < current->Data) ? current->pLeft : current->pRight;
+		if (!current) return;
+		if (!current->pLeft && !current->pRight)
+			(current == Root) ? Root = nullptr : ((parent->pLeft == current) ? parent->pLeft = nullptr : parent->pRight = nullptr), delete current;
+		else if (!current->pLeft)
+			(current == Root) ? Root = current->pRight : ((parent->pLeft == current) ? parent->pLeft = current->pRight : parent->pRight = current->pRight), delete current;
+		else if (!current->pRight)
+			(current == Root) ? Root = current->pLeft : ((parent->pLeft == current) ? parent->pLeft = current->pLeft : parent->pRight = current->pLeft), delete current;
+		else {
+			Element* minParent = current, * min = current->pRight;
+			while (min->pLeft) minParent = min, min = min->pLeft;
 			current->Data = min->Data;
-			if (minParent->pLeft == min)
-			{
-				minParent->pLeft = min->pRight;
-			}
-			else
-			{
-				minParent->pRight = min->pRight;
-			}
+			(minParent->pLeft == min) ? minParent->pLeft = min->pRight : minParent->pRight = min->pRight;
 			delete min;
 		}
 	}
-	
 };
 
 class UniqueTree :public Tree
