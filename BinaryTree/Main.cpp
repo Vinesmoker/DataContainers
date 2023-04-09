@@ -1,6 +1,14 @@
-#include<iostream>
+ï»¿#include<iostream>
 #include<ctime>
+#include<chrono>
 using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+
+#define DEBUG
+
+#define delimiter "\n-----------------------------------------------\n"
 
 class Tree
 {
@@ -14,11 +22,19 @@ protected:
 		Element(int Data, Element* pLeft = nullptr, Element* pRight = nullptr)
 			:Data(Data), pLeft(pLeft), pRight(pRight)
 		{
-			//cout << "EConstructor:\t" << this << endl;
+#ifdef DEBUG
+			cout << "EConstructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		~Element()
 		{
-			//cout << "DConstructor:\t" << this << endl;
+#ifdef DEBUG
+			cout << "EDestructor:\t" << this << endl;
+#endif // DEBUG
+		}
+		bool isLeaf()const
+		{
+			return pLeft == pRight;
 		}
 		friend class Tree;
 		friend class UniqueTree;
@@ -30,12 +46,71 @@ public:
 	}
 	Tree() :Root(nullptr)
 	{
-		//cout << "TConstructor:\t" << this << endl;
+		cout << "TConstructor:\t" << this << endl;
+	}
+	Tree(const std::initializer_list<int>& il) :Tree()
+	{
+		for (int i : il)insert(i);
+	}
+	Tree(const Tree& other) :Tree()
+	{
+		Copy(other.Root);
 	}
 	~Tree()
 	{
-		//cout << "TDrestructor:\t" << this << endl;
+		Clear(Root);
+		cout << "TDestructor:\t" << this << endl;
 	}
+
+	void insert(int Data)
+	{
+		insert(Data, Root);
+	}
+	void erase(int Data)
+	{
+		erase(Data, Root);
+	}
+	int minValue()const
+	{
+		return minValue(Root);
+	}
+	int maxValue()const
+	{
+		return maxValue(Root);
+	}
+	int Count()const
+	{
+		return Count(Root);
+	}
+	int Sum()const
+	{
+		return Sum(Root);
+	}
+	double Avg()
+	{
+		return (double)Sum(Root) / Count(Root);
+	}
+	int Depth()const
+	{
+		return Depth(Root);
+	}
+	void Clear()
+	{
+		Clear(Root);
+	}
+	void Copy(Element* Root)
+	{
+		if (Root == nullptr)return;
+		insert(Root->Data, this->Root);
+		Copy(Root->pLeft);
+		Copy(Root->pRight);
+	}
+	void print()const
+	{
+		print(Root);
+		cout << endl;
+	}
+private:
 	void insert(int Data, Element* Root)
 	{
 		if (this->Root == nullptr)this->Root = new Element(Data);
@@ -51,6 +126,79 @@ public:
 			else insert(Data, Root->pRight);
 		}
 	}
+	void erase(int Data, Element*& Root)
+	{
+		if (Root == nullptr) return;
+		erase(Data, Root->pLeft);
+		erase(Data, Root->pRight);
+		if (Data == Root->Data)
+		{
+			if (Root->isLeaf())
+			{
+				delete Root;
+				Root = nullptr;
+			}
+			else
+			{
+				if (Count(Root->pLeft) > Count(Root->pRight))
+				{
+					Root->Data = maxValue(Root->pLeft);
+					erase(maxValue(Root->pLeft), Root->pLeft);
+				}
+				else
+				{
+					Root->Data = minValue(Root->pRight);
+					erase(minValue(Root->pRight), Root->pRight);
+				}
+			}
+		}
+	}
+	int minValue(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		/*if (Root->pLeft == nullptr)return Root->Data;
+		else return minValue(Root->pLeft);*/
+		return Root->pLeft == nullptr ? Root->Data : minValue(Root->pLeft);
+	}
+	int maxValue(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		return Root->pRight ? maxValue(Root->pRight) : Root->Data;
+	}
+	int Count(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		else return Count(Root->pLeft) + Count(Root->pRight) + 1;
+	}
+	int Sum(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		else return Sum(Root->pLeft) + Sum(Root->pRight) + Root->Data;
+	}
+	int Depth(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+
+		int l_depth = Depth(Root->pLeft) + 1;
+		int r_depth = Depth(Root->pRight) + 1;
+		return l_depth < r_depth ? r_depth : l_depth;
+
+		/*return Root == nullptr ? 0 :
+			Depth(Root->pLeft) + 1 >
+			Depth(Root->pRight) + 1 ?
+			Depth(Root->pLeft) + 1 :
+			Depth(Root->pRight) + 1;*/
+			/*if (Root == nullptr)return 0;
+			if (Depth(Root->pLeft) + 1 > Depth(Root->pRight) + 1)return Depth(Root->pLeft) + 1;
+			else return Depth(Root->pRight) + 1;*/
+	}
+	void Clear(Element* Root)
+	{
+		if (Root == nullptr)return;
+		Clear(Root->pLeft);
+		Clear(Root->pRight);
+		delete Root;
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
@@ -58,78 +206,10 @@ public:
 		cout << Root->Data << "\t";
 		print(Root->pRight);
 	}
-
-	//int minValue(Element* Root)
-	//{
-	//	if (Root == nullptr)
-	//		return INT_MAX;
-	//	int leftMin = minValue(Root->pLeft);
-	//	int rightMin = minValue(Root->pRight);
-	//	return min(Root->Data, min(leftMin, rightMin));
-	//}
-	int minValue(Element* Root)
-	{
-		if (Root == nullptr)return 0;
-		/*if (Root->pLeft == nullptr)return Root->Data;
-		else return minValue(Root->pLeft);*/
-		return Root->pLeft == nullptr ? Root->Data : minValue(Root->pLeft);
-	}
-	int maxValue(Element* Root)
-	{
-		if (Root == nullptr)return 0;
-		return Root->pRight ? maxValue(Root->pRight) : Root->Data;
-	}
-	int count(Element* Root)
-	{
-		if (Root == nullptr) return 0;
-		else return count(Root->pLeft) + count(Root->pRight) + 1;
-	}
-	int sum(Element* Root)
-	{
-		if (Root == nullptr) return 0;
-		else return Root->Data + sum(Root->pLeft) + sum(Root->pRight);
-	}
-	double avg()
-	{
-		return (double)sum(Root) / count(Root);
-	}
-	int depth(Element* Root)
-	{
-		if (Root == nullptr) return 0;
-		else
-		{
-			int leftDepth = depth(Root->pLeft);
-			int rightDepth = depth(Root->pRight);
-			if (leftDepth > rightDepth) return leftDepth + 1;
-			else return rightDepth + 1;
-		}
-	}
-	
-
-	void erase(int Data, Element*& Root) {
-		Element* parent = nullptr, * current = Root;
-		while (current && current->Data != Data)
-			parent = current, current = (Data < current->Data) ? current->pLeft : current->pRight;
-		if (!current) return;
-		if (!current->pLeft && !current->pRight)
-			(current == Root) ? Root = nullptr : ((parent->pLeft == current) ? parent->pLeft = nullptr : parent->pRight = nullptr), delete current;
-		else if (!current->pLeft)
-			(current == Root) ? Root = current->pRight : ((parent->pLeft == current) ? parent->pLeft = current->pRight : parent->pRight = current->pRight), delete current;
-		else if (!current->pRight)
-			(current == Root) ? Root = current->pLeft : ((parent->pLeft == current) ? parent->pLeft = current->pLeft : parent->pRight = current->pLeft), delete current;
-		else {
-			Element* minParent = current, * min = current->pRight;
-			while (min->pLeft) minParent = min, min = min->pLeft;
-			current->Data = min->Data;
-			(minParent->pLeft == min) ? minParent->pLeft = min->pRight : minParent->pRight = min->pRight;
-			delete min;
-		}
-	}
 };
 
 class UniqueTree :public Tree
 {
-public:
 	void insert(int Data, Element* Root)
 	{
 		if (this->Root == nullptr)this->Root = new Element(Data);
@@ -145,172 +225,144 @@ public:
 			else insert(Data, Root->pRight);
 		}
 	}
-	double avg()
+public:
+	void insert(int Data)
 	{
-		return (double)sum(Root) / count(Root);
-	}
-	int depth(Element* Root)
-	{
-		if (Root == nullptr) return 0;
-		else
-		{
-			int leftDepth = depth(Root->pLeft);
-			int rightDepth = depth(Root->pRight);
-			if (leftDepth > rightDepth) return leftDepth + 1;
-			else return rightDepth + 1;
-		}
-	}
-	void erase(int Data, Element* Root)
-	{
-		Element* parent = nullptr;
-		Element* current = Root;
-		while (current != nullptr && current->Data != Data)
-		{
-			parent = current;
-			if (Data < current->Data)
-			{
-				current = current->pLeft;
-			}
-			else
-			{
-				current = current->pRight;
-			}
-		}
-		if (current == nullptr)
-		{
-			return;
-		}
-		if (current->pLeft == nullptr && current->pRight == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = nullptr;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = nullptr;
-			}
-			else
-			{
-				parent->pRight = nullptr;
-			}
-			delete current;
-		}
-		else if (current->pLeft == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = current->pRight;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = current->pRight;
-			}
-			else
-			{
-				parent->pRight = current->pRight;
-			}
-			delete current;
-		}
-		else if (current->pRight == nullptr)
-		{
-			if (current == Root)
-			{
-				Root = current->pLeft;
-			}
-			else if (parent->pLeft == current)
-			{
-				parent->pLeft = current->pLeft;
-			}
-			else
-			{
-				parent->pRight = current->pLeft;
-			}
-			delete current;
-		}
-		else
-		{
-			Element* minParent = current;
-			Element* min = current->pRight;
-			while (min->pLeft != nullptr)
-			{
-				minParent = min;
-				min = min->pLeft;
-			}
-			current->Data = min->Data;
-			if (minParent->pLeft == min)
-			{
-				minParent->pLeft = min->pRight;
-			}
-			else
-			{
-				minParent->pRight = min->pRight;
-			}
-			delete min;
-		}
-	}
-	void clear()
-	{
-		clear(Root);
-		Root = nullptr;
-	}
-	void clear(Element* Root)
-	{
-		if (Root == nullptr) return;
-		clear(Root->pLeft);
-		clear(Root->pRight);
-		delete Root;
+		insert(Data, Root);
 	}
 };
 
+//#define BASE_CHECK
+//#define TIME_MESUREMENT
+
+#define DEPTH_CHECK
 
 void main()
 {
 	setlocale(LC_ALL, "");
-	int n; int q;
-	cout << "Ââåäèòå ðàçìåð äåðåâà: "; cin >> n;
+#ifdef BASE_CHECK
+	int n = 100000;
+	cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð´ÐµÑ€ÐµÐ²Ð°: "; cin >> n;
 	Tree tree;
+
+#ifdef TIME_MESUREMENT
+	cout << typeid(std::chrono::steady_clock::now()).name() << endl;
+	std::chrono::steady_clock::time_point ch_start = std::chrono::steady_clock::now();
+	clock_t c_start = clock();
+	static time_t t_start = time(NULL);
+#endif // TIME_MESUREMENT
+
 	for (int i = 0; i < n; i++)
 	{
-		tree.insert(rand() % 100, tree.getRoot());
+		tree.insert(rand() % 100);
 	}
-	tree.print(tree.getRoot());
-	cout << "\nÌèíèìàëüíîå çíà÷åíèå â äåðåâå: " << tree.minValue(tree.getRoot()) << endl;
-	cout << "\nÌàêñèìàëüíîå çíà÷åíèå â äåðåâå: " << tree.maxValue(tree.getRoot()) << endl;
-	cout << "\nÊîëè÷åñòâî ýëåìåíòîâ â äåðåâå: " << tree.count(tree.getRoot()) << endl;
-	cout << "\nÑóììà ýëåìåíòîâ â äåðåâå: " << tree.sum(tree.getRoot()) << endl;
-	cout << "\nÑðåäíåå àðåôìèòè÷åñêîå ýëåìåíòîâ äåðåâà: " << tree.avg() << endl;
-	cout << "\nÃëóáèíà äåðåâà: " << tree.depth(tree.getRoot()) << endl;
-	cout << "Ââåäèòå óäàëÿåìûé ýëåìåíò äåðåâà: "; cin >> q;
-	tree.erase(q, tree.getRoot());
-	cout << "Äåðåâî ïîñëå óäàëåíèÿ:\n";
-	tree.print(tree.getRoot());
-	cout << endl;
-	//tree.clear(tree.getRoot());
+
+#ifdef TIME_MESUREMENT
+	///////////////////////		Time:		///////////////////////
+	std::chrono::steady_clock::time_point ch_end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> delta = ch_end - ch_start;
+	clock_t c_end = clock();
+	static time_t t_end = time(NULL);
+	cout << delimiter << endl;
+	cout << "elapsed time chrono:  " << delta.count() << endl;
+	cout << "elapsed time time():  " << t_end - t_start << endl;
+	cout << "elapsed time clock(): " << double(c_end - c_start) / CLOCKS_PER_SEC << endl;
+	cout << delimiter << endl;
+	//-------------------------------------------------------------  
+#endif // TIME_MESUREMENT
+
+	//tree.print();
+	cout << "ÐœÐ¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð² Ð´ÐµÑ€ÐµÐ²Ðµ: " << tree.minValue() << endl;
+	cout << "ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð² Ð´ÐµÑ€ÐµÐ²Ðµ: " << tree.maxValue() << endl;
+
+#ifdef TIME_MESUREMENT
+	system("PAUSE");
+	//////////////////////////////////////////////////////////////////////////////////////////
+	ch_start = std::chrono::steady_clock::now();
+	t_start = time(NULL);
+	c_start = clock();
+#endif
+
+	cout << "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Count() << endl;
+
+#ifdef TIME_MESUREMENT
+	ch_end = std::chrono::steady_clock::now();
+	t_end = time(NULL);
+	c_end = clock();
+	cout << delimiter << endl;
+	delta = ch_end - ch_start;
+	cout << "elapsed time chrono:  " << delta.count() << endl;
+	cout << "elapsed time time():  " << t_end - t_start << endl;
+	cout << "elapsed time clock(): " << double(c_end - c_start) / CLOCKS_PER_SEC << endl;
+	cout << delimiter << endl;
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	ch_start = std::chrono::steady_clock::now();
+	t_start = time(NULL);
+	c_start = clock();
+#endif // TIME_MESUREMENT
+
+	//cout << "Ð¡ÑƒÐ¼Ð¼Ð° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Sum() << endl;
+	cout << "Ð“Ð»ÑƒÐ±Ð¸Ð½Ð° Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Depth() << endl;
+
+#ifdef TIME_MESUREMENT
+	ch_end = std::chrono::steady_clock::now();
+	t_end = time(NULL);
+	c_end = clock();
+	cout << delimiter << endl;
+	delta = ch_end - ch_start;
+	cout << "elapsed time chrono:  " << delta.count() << endl;
+	cout << "elapsed time time():  " << t_end - t_start << endl;
+	cout << "elapsed time clock(): " << double(c_end - c_start) / CLOCKS_PER_SEC << endl;
+	cout << delimiter << endl;
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	cout << endl;
+#endif // TIME_MESUREMENT
+
+	cout << "Ð¡ÑƒÐ¼Ð¼Ð° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Sum() << endl;
+	cout << "Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ-Ð°Ñ€Ð¸Ñ„Ð¼ÐµÑ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Avg() << endl;
+	cout << "Ð“Ð»ÑƒÐ±Ð¸Ð½Ð° Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Depth() << endl;
+
+#ifdef TIME_MESUREMENT
+	//system("PAUSE");
+//cout << "Ð’Ñ€ÐµÐ¼Ñ Ð¿Ð¾Ð´ÑÑ‡ÐµÑ‚Ð°: " << difftime(t_end, t_start) << " c" << endl;
+//cout << "Ð’Ñ€ÐµÐ¼Ñ Ð¿Ð¾Ð´ÑÑ‡ÐµÑ‚Ð°: " << t_end - t_start << " c" << endl;
+//cout << start << endl;
+//cout << end << endl;
+//cout << "Ð’Ñ€ÐµÐ¼Ñ Ð¿Ð¾Ð´ÑÑ‡ÐµÑ‚Ð°: " << double(end - start) / CLOCKS_PER_SEC << endl;  
+#endif // TIME_MESUREMENT
+
 	UniqueTree tree2;
-	/*for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
+	{
+		tree2.insert(rand() % 100);
+	}
+	/*while (tree2.Count(tree2.getRoot()) < n)
 	{
 		tree2.insert(rand() % 100, tree2.getRoot());
 	}*/
-	while(tree2.count(tree2.getRoot()) < n)
-	{
-		tree2.insert(rand() % 100, tree2.getRoot());
-	}
-	tree2.print(tree2.getRoot());
-	tree2.clear();
-	cout << "\nÌèíèìàëüíîå çíà÷åíèå â äåðåâå: " << tree2.minValue(tree2.getRoot()) << endl;
-	cout << "\nÌàêñèìàëüíîå çíà÷åíèå â äåðåâå: " << tree2.maxValue(tree2.getRoot()) << endl;
-	cout << "\nÊîëè÷åñòâî ýëåìåíòîâ â äåðåâå: " << tree2.count(tree2.getRoot()) << endl;
-	cout << "\nÑóììà ýëåìåíòîâ â äåðåâå: " << tree2.sum(tree2.getRoot()) << endl;
-	cout << "\nÑðåäíåå àðåôìèòè÷åñêîå ýëåìåíòîâ äåðåâà: " << tree2.avg() << endl;
-	cout << "\nÃëóáèíà äåðåâà: " << tree2.depth(tree.getRoot()) << endl;
-	cout << "\nÂâåäèòå óäàëÿåìûé ýëåìåíò äåðåâà: "; cin >> q;
-	tree2.erase(q, tree2.getRoot());
-	cout << "\nÄåðåâî ïîñëå óäàëåíèÿ:\n";
-	tree2.print(tree2.getRoot());
+	//tree2.print(tree2.getRoot());
 	cout << endl;
-	tree2.print(tree2.getRoot());
+	cout << "ÐœÐ¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð² Ð´ÐµÑ€ÐµÐ²Ðµ: " << tree2.minValue() << endl;
+	cout << "ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð² Ð´ÐµÑ€ÐµÐ²Ðµ: " << tree2.maxValue() << endl;
+	cout << "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree2.Count() << endl;
+	cout << "Ð¡ÑƒÐ¼Ð¼Ð° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree2.Sum() << endl;
+	cout << "Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ-Ð°Ñ€Ð¸Ñ„Ð¼ÐµÑ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð´ÐµÑ€ÐµÐ²Ð°: " << tree2.Avg() << endl;
+	cout << "Ð“Ð»ÑƒÐ±Ð¸Ð½Ð° Ð´ÐµÑ€ÐµÐ²Ð°: " << tree2.Depth() << endl;
+#endif // BASE_CHECK
+
+#ifdef DEPTH_CHECK
+	Tree tree = { 50, 25, 75, 16, 32, 64, 80, 48, 49, 85, 91, 58, 68, 67 };
+	tree.print();
+	cout << "Ð“Ð»ÑƒÐ±Ð¸Ð½Ð° Ð´ÐµÑ€ÐµÐ²Ð°: " << tree.Depth() << endl;
+	int value;
+	cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ÑƒÐ´Ð°Ð»ÑÐµÐ¼Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ: "; cin >> value;
+	tree.erase(value);
+	tree.print();
+
+	/*Tree tree2 = tree;
+	tree2.print();*/
+#endif // DEPTH_CHECK
 }
